@@ -1,4 +1,4 @@
-FROM retree:latest as tmp
+FROM ohbonsai/retree:latest as tmp
 
 
 FROM  python:3.6-slim-buster

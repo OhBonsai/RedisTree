@@ -8,7 +8,7 @@ ifndef $(shell command -v docker)
 endif
 
 builder: ## build rust cross-compiler base image, for mac developers
-	docker build -t retree-builder -f builder.Dockerfile .
+	docker build -t ohbonsai/retree-builder -f builder.Dockerfile .
 
 
 has_builder := $(shell docker images 'retree-builder' | tail -n 1 | grep 'retree-builder' | awk '{print $2}')
@@ -17,13 +17,18 @@ ifndef has_builder
 	@echo "Builder image is not exist, Auto make builder"
 	@make builder
 endif
-	docker build -t retree -f Dockerfile .
+	docker build -t ohbonsai/redistree:latest -f Dockerfile .
 
 tester: build ## build tester image
 	docker build -t retree-tester -f tester.Dockerfile .
 
 test: tester ## do some behavioral tester
-	docker run -v ${PWD}/tests:/tests --name treetest  --rm retree-tester 
+	docker run -v ${PWD}/tests:/tests --name treetest  --rm retree-tester
+
+
+push: build ## push to docker hub
+	docker push ohbonsai/retree-builder
+	docker push ohbonsai/redistree
 
 clean: ## clean
 	rm -rf target

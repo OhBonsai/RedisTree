@@ -1,4 +1,4 @@
-FROM retree-builder:latest as builder
+FROM ohbonsai/retree-builder:latest as builder
 
 ENV LIBDIR /usr/lib/redis/modules
 ADD . /RETREE
