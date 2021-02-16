@@ -332,6 +332,12 @@ impl TryFrom<String> for Tree<String> {
 
     fn try_from(item: String) -> Result<Self, Self::Error> {
         let tree_string = item.trim();
+
+        if tree_string.starts_with("(") {
+            return Err("no root in tree string".into())
+        }
+
+
         let mut tokens = Vec::new();
         let mut legal = 0;
 
@@ -362,7 +368,7 @@ impl TryFrom<String> for Tree<String> {
 
         // the number of '(' is not equal to the number of ')'
         if legal !=0 || tokens.len() == 0 {
-            return Err("() is not closed or no root".into())
+            return Err("() is not closed".into())
         }
 
         let mut tree = Tree::new(String::from(&tokens[0]));
@@ -403,6 +409,10 @@ mod extend_tests {
         assert!(Tree::try_from(String::from(tree_string)).is_ok());
 
         assert_eq!(Tree::try_from("a").unwrap(), Tree::new("a".to_string()));
+
+
+        let wrong_string = " (0)";
+        assert!(Tree::try_from(wrong_string).is_err());
     }
 
 
