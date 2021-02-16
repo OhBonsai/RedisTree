@@ -2,6 +2,13 @@
 RedisTree is a [Redis](https://redis.io/) module that implements Polytree as a native data type. It allows creating,locating,pushing and  detaching tree from Redis keys.
 **RedisTree has been running in production environment for one year**
 
+
+- 哥，来一趟不容易，点个Star呗
+- Could you give me a star...
+- Donne moi une étoile
+- 星をください
+- 나에게 별을 줘
+
 ## Why?
 Store organization data in redis, Need ploytree and some helper function
 
