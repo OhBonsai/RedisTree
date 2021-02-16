@@ -113,17 +113,17 @@ OK
 ## Run
 ### Linux
 ```
-redis-server --loadmodule yourpath/librejson.so
+redis-server --loadmodule yourpath/libretree.so
 ```
 
 ### Mac
 ```
-redis-server --loadmodule ./target/debug/librejson.dylib
+redis-server --loadmodule ./target/debug/libretree.dylib
 ```
 
 ### Config
 ```
-loadmodule /yourpath/librejson.so
+loadmodule /yourpath/libretree.so
 ```
 
 
