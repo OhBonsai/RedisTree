@@ -1,6 +1,6 @@
 # RedisTree
 RedisTree is a [Redis](https://redis.io/) module that implements Polytree as a native data type. It allows creating,locating,pushing and  detaching tree from Redis keys.
-
+**RedisTree has been running in production environment for one year**
 
 ## Why?
 Store organization data in redis, Need ploytree and some helper function
@@ -146,3 +146,8 @@ tester                         build tester image
 - Postgres ltree gist index
 - Postgres ltree query
 - Hash Index
+
+
+## Thanks
+- [RedisJSON](https://github.com/RedisJSON/RedisJSON)
+- [trees](https://github.com/oooutlk/trees)
