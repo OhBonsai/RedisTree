@@ -4,8 +4,11 @@ from redis.exceptions import ResponseError
 
 def test_init(redis_client):
     # wrong format tree string will raise ResponseError
-    with pytest.raises(ResponseError, match="() is not closed or no root"):
+    with pytest.raises(ResponseError, match="() is not closed"):
         redis_client.execute_command("tree.init", "hello", "0 (1(2")
+
+    with pytest.raises(ResponseError, match="no root in tree string"):
+        redis_client.execute_command("tree.init", "hello", "(2)")
 
     assert redis_client.execute_command("tree.get", "hello") is None
     redis_client.execute_command("tree.init", "hello", "0 (1 2)")
