@@ -2,11 +2,12 @@
 extern crate redis_module;
 
 use redis_module::native_types::RedisType;
-use redis_module::{raw, Context, NextArg, RedisResult, RedisValue, REDIS_OK};
+use redis_module::{raw, Context, NextArg, RedisResult, RedisValue, RedisString, REDIS_OK};
 use redis_module::logging::{log as redis_log};
 use redis_module::LogLevel;
-use std::os::raw::c_void;
-use std::os::raw::c_int;
+use std::os::raw::{c_void, c_int, c_char};
+use std::ptr;
+use std::ffi::{CStr, CString};
 use trees::*;
 use std::convert::TryFrom;
 
@@ -77,10 +78,22 @@ pub unsafe extern "C" fn rdb_load(rdb: *mut raw::RedisModuleIO, encver: c_int) -
 
 #[allow(non_snake_case, unused)]
 pub unsafe extern "C" fn rdb_save(rdb: *mut raw::RedisModuleIO, value: *mut c_void) {
-    let tree = &*(value as *mut Tree<String>);
-    raw::save_string(rdb, &tree.to_string());
-    raw::save_unsigned(rdb, 0);
+    let tree = (&*(value as *mut Tree<String>)).to_string();
+    raw::save_string(rdb, tree.as_str());
+
+
+    // let tree = &*(value as *mut Tree<String>);
+    // let tree_string = tree.to_string();
+    // let c_str = CString::new(tree_string.as_str()).unwrap();
+    // raw::RedisModule_SaveStringBuffer.unwrap()(rdb, c_str.as_ptr() as *const c_char, tree_string.len());
 }
+
+
+#[allow(non_snake_case, unused)]
+pub unsafe extern "C" fn aof_rewrite(aof: *mut raw::RedisModuleIO, key: *mut raw::RedisModuleString, value: *mut c_void) {
+    // do nothing
+}
+
 
 
 #[allow(non_snake_case, unused)]
@@ -106,7 +119,7 @@ static TREE_TYPE: RedisType = RedisType::new(
         version: raw::REDISMODULE_TYPE_METHOD_VERSION as u64,
         rdb_load: Some(rdb_load),
         rdb_save: Some(rdb_save),
-        aof_rewrite: None,
+        aof_rewrite: Some(aof_rewrite),
         free: Some(free),
         mem_usage: None,
         digest: None,
