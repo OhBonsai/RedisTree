@@ -59,25 +59,53 @@ impl RedisTreeType {
     }
 }
 
-// impl Drop for RedisTreeType {
-//     fn drop(&mut self) {
-//         println!("{}", self.to_string())
-//     }
-// }
 
-
+#[allow(non_snake_case, unused)]
 pub extern "C" fn init(_: *mut raw::RedisModuleCtx) -> c_int {
-    log("tree initialized");
     raw::Status::Ok as c_int
 }
+
+#[allow(non_snake_case, unused)]
+pub unsafe extern "C" fn rdb_load(rdb: *mut raw::RedisModuleIO, encver: c_int) -> *mut c_void {
+    if let Ok(tree) = Tree::try_from(raw::load_string(rdb)) {
+        Box::into_raw(Box::new(tree)) as *mut c_void
+    } else {
+        Box::into_raw(Box::new(Tree::new("rdb_load_fail"))) as *mut c_void
+    }
+
+}
+
+#[allow(non_snake_case, unused)]
+pub unsafe extern "C" fn rdb_save(rdb: *mut raw::RedisModuleIO, value: *mut c_void) {
+    let tree = &*(value as *mut Tree<String>);
+    raw::save_string(rdb, &tree.to_string());
+    raw::save_unsigned(rdb, 0);
+}
+
+
+#[allow(non_snake_case, unused)]
+pub unsafe extern "C" fn free(value: *mut c_void) {
+    Box::from_raw(value as *mut RedisTreeType);
+}
+
+
+#[allow(non_snake_case, unused)]
+pub unsafe extern "C" fn aux_load(rdb: *mut raw::RedisModuleIO, encver: i32, when: i32) -> i32 {
+    raw::Status::Ok as i32
+}
+
+#[allow(non_snake_case, unused)]
+pub unsafe extern "C" fn aux_save(rdb: *mut raw::RedisModuleIO, when: i32) {
+}
+
 
 static TREE_TYPE: RedisType = RedisType::new(
     "ReTreeYou",
     0,
     raw::RedisModuleTypeMethods {
         version: raw::REDISMODULE_TYPE_METHOD_VERSION as u64,
-        rdb_load: None,
-        rdb_save: None,
+        rdb_load: Some(rdb_load),
+        rdb_save: Some(rdb_save),
         aof_rewrite: None,
         free: Some(free),
         mem_usage: None,
@@ -88,9 +116,6 @@ static TREE_TYPE: RedisType = RedisType::new(
     },
 );
 
-unsafe extern "C" fn free(value: *mut c_void) {
-    Box::from_raw(value as *mut RedisTreeType);
-}
 
 
 fn init_tree(ctx: &Context, args: Vec<String>) -> RedisResult {
