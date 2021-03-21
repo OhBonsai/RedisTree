@@ -4,6 +4,7 @@ RedisTree is a [Redis](https://redis.io/) module that implements Polytree as a n
 
 
 - 哥，来一趟不容易，点个Star呗
+- Не могли бы вы дать мне звезду ...
 - Could you give me a star...
 - Donne moi une étoile
 - 星をください
