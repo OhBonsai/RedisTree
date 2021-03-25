@@ -16,12 +16,28 @@ FROM redis:6.0.10
 
 WORKDIR /data
 COPY --from=builder /RETREE/target/release/retree.so /usr/lib/redis/modules/retree.so
-ADD ./redis.conf /data/redis.conf
+ADD ./redis.conf /etc/redis/redis.conf
+ADD ./sentinel.conf /etc/redis/sentinel.conf
+ADD ./acl.file /etc/redis/acl.file
+COPY docker-entrypoint.sh /docker-entrypoint.sh
+RUN chmod a+x /docker-entrypoint.sh
 
-# Set log path and not daemonize
-RUN sed -i 's/^\(logfile .*\)$/# \1/' /data/redis.conf  \
-    && echo "\nlogfile /data/redis-server.log" >> /data/redis.conf \
-    && sed -i 's/^\(daemonize .*\)$/# \1/' /data/redis.conf \
-    && echo "\ndaemonize no" >> /data/redis.conf
+WORKDIR /data
 
-CMD ["redis-server", "/data/redis.conf", "--loadmodule", "/usr/lib/redis/modules/retree.so"]
+# set log path
+# set aclfile
+# set daemonize no
+RUN sed -i 's/^\(logfile .*\)$/# \1/' /etc/redis/redis.conf  \
+    && echo "\nlogfile /data/redis-server.log" >> /etc/redis/redis.conf \
+    && sed -i 's/^\(daemonize .*\)$/# \1/' /etc/redis/redis.conf \
+    && echo "\ndaemonize no" >> /etc/redis/redis.conf \
+    && echo "\naclfile /etc/redis/acl.file" >> /etc/redis/redis.conf \
+    && sed -i 's/^\(user .*\)$/# \1/' /etc/redis/redis.conf
+
+
+
+# Load the entrypoint script to be run later
+ENTRYPOINT ["/docker-entrypoint.sh"]
+
+# Invoke the entrypoint script
+CMD ["single"]

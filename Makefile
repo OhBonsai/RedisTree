@@ -30,6 +30,27 @@ push: build ## push to docker hub
 	docker push ohbonsai/retree-builder
 	docker push ohbonsai/redistree
 
+cluster: run-master run-slave run-sentinel ##  run sentinel cluster
+
+# https://github.com/docker-library/redis/issues/45
+# 在mac中，你无法在host直接链接进去
+run-master:
+	docker rm -f master || echo "no contianer is ok"
+	docker run --name master --net=host -d  fdauth-redis master
+
+run-slave:
+	docker rm -f slave || echo "no contianer is ok"
+	docker run --name slave --net=host --env REDIS_PORT=6380 --env MASTER_IP=0.0.0.0 -d fdauth-redis slave
+
+run-sentinel:
+	docker rm -f s1 || echo "no container is ok"
+	docker rm -f s2 || echo "no container is ok"
+	docker rm -f s3 || echo "no container is ok"
+	docker run --name s1 --net=host --env REDIS_PORT=26379 --env MASTER_IP=0.0.0.0 -d fdauth-redis sentinel
+	docker run --name s2 --net=host --env REDIS_PORT=26380 --env MASTER_IP=0.0.0.0 -d fdauth-redis sentinel
+	docker run --name s3 --net=host --env REDIS_PORT=26381 --env MASTER_IP=0.0.0.0 -d fdauth-redis sentinel
+
+
 clean: ## clean
 	rm -rf target
 	rm -rf tests/.pytest_cache
