@@ -119,7 +119,7 @@ static TREE_TYPE: RedisType = RedisType::new(
         version: raw::REDISMODULE_TYPE_METHOD_VERSION as u64,
         rdb_load: Some(rdb_load),
         rdb_save: Some(rdb_save),
-        aof_rewrite: Some(aof_rewrite),
+        aof_rewrite: None,
         free: Some(free),
         mem_usage: None,
         digest: None,
@@ -127,7 +127,7 @@ static TREE_TYPE: RedisType = RedisType::new(
         aux_save: None,
         aux_save_triggers: 0,
     },
-);
+)execution failed error during connect: Get http://%2Fvar%2Frun%2Fdocker.sock/v1.40/containers/he6j1i859tsdcm6s9ukcg8muicl3dxib/json: context canceled        {"stage-d": 9095, "rep;
 
 
 
